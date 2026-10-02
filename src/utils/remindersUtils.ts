@@ -76,7 +76,6 @@ export function saveStoredReminders(list: OperationalReminderConfig[], empresaId
     localStorage.setItem(STORAGE_KEY_REMINDERS, JSON.stringify(list));
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('af_reminders_updated'));
-      window.dispatchEvent(new Event('storage'));
     }
   } catch (e) {
     console.error('Erro ao salvar lembretes:', e);

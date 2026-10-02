@@ -31,15 +31,21 @@ export function CadastrosLembretesManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   React.useEffect(() => {
+    let isMounted = true;
     hydrateRemindersFromFirestore().then(list => {
-      if (list) setReminders(list);
+      if (list && isMounted) setReminders(list);
     });
 
     const handleUpdate = () => {
-      setReminders(getStoredReminders());
+      setTimeout(() => {
+        if (isMounted) setReminders(getStoredReminders());
+      }, 0);
     };
     window.addEventListener('af_reminders_updated', handleUpdate);
-    return () => window.removeEventListener('af_reminders_updated', handleUpdate);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('af_reminders_updated', handleUpdate);
+    };
   }, []);
 
   // Form State

@@ -296,13 +296,19 @@ export default function ValidadesPanel({ user, empresa, hideSugerirMelhoria, the
   }, [validadesList, empresaId]);
 
   useEffect(() => {
+    let isMounted = true;
     const handleFefoUpdate = () => {
-      setFefoDemands(getStoredFefoDemands(empresaId));
+      setTimeout(() => {
+        if (isMounted) {
+          setFefoDemands(getStoredFefoDemands(empresaId));
+        }
+      }, 0);
     };
     window.addEventListener('fefo_demands_updated', handleFefoUpdate);
     window.addEventListener('storage', handleFefoUpdate);
     window.addEventListener('local_data_changed', handleFefoUpdate);
     return () => {
+      isMounted = false;
       window.removeEventListener('fefo_demands_updated', handleFefoUpdate);
       window.removeEventListener('storage', handleFefoUpdate);
       window.removeEventListener('local_data_changed', handleFefoUpdate);
@@ -459,8 +465,13 @@ export default function ValidadesPanel({ user, empresa, hideSugerirMelhoria, the
 
   // Escuta atualizações de produtos (novos cadastros, edições, importações) para atualizar o autocomplete imediatamente
   useEffect(() => {
+    let isMounted = true;
     const handleCatalogUpdate = () => {
-      setCatalogTrigger(v => v + 1);
+      setTimeout(() => {
+        if (isMounted) {
+          setCatalogTrigger(v => v + 1);
+        }
+      }, 0);
     };
 
     window.addEventListener('produtos_updated', handleCatalogUpdate);
@@ -470,6 +481,7 @@ export default function ValidadesPanel({ user, empresa, hideSugerirMelhoria, the
     window.addEventListener('storage', handleCatalogUpdate);
 
     return () => {
+      isMounted = false;
       window.removeEventListener('produtos_updated', handleCatalogUpdate);
       window.removeEventListener('produtos_cadastro_changed', handleCatalogUpdate);
       window.removeEventListener('local_data_changed', handleCatalogUpdate);

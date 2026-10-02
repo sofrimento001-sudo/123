@@ -71,13 +71,23 @@ export const OperationalNotificationBell: React.FC<OperationalNotificationBellPr
   const [reminderConfigs, setReminderConfigs] = useState<OperationalReminderConfig[]>(() => getStoredReminders());
 
   useEffect(() => {
-    const handleRemindersUpdate = () => {
-      setReminderConfigs(getStoredReminders());
+    let isMounted = true;
+    const handleRemindersUpdate = (e?: Event) => {
+      // If it's a native StorageEvent from another tab, only respond if it relates to reminders
+      if (e && 'key' in e && (e as StorageEvent).key && (e as StorageEvent).key !== 'af_operational_reminders_config') {
+        return;
+      }
+      setTimeout(() => {
+        if (isMounted) {
+          setReminderConfigs(getStoredReminders());
+        }
+      }, 0);
     };
     if (typeof window !== 'undefined') {
       window.addEventListener('af_reminders_updated', handleRemindersUpdate);
       window.addEventListener('storage', handleRemindersUpdate);
       return () => {
+        isMounted = false;
         window.removeEventListener('af_reminders_updated', handleRemindersUpdate);
         window.removeEventListener('storage', handleRemindersUpdate);
       };
